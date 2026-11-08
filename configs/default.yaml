@@ -71,7 +71,11 @@ tune:
 
 threshold:
   percentiles: [90, 95, 97.5, 99, 99.5, 99.9]
-  headline: val_f1                 # val_f1 | p<percentile>, e.g. p95
+  # Headline SAE operating point (all variants are always computed and stored):
+  #   val_youden -> max Youden's J (TPR - FPR) on labelled val; prevalence-independent (default)
+  #   val_f1     -> max attack-class F1 on labelled val (high FPR on attack-majority data)
+  #   p<pct>     -> unsupervised percentile of normal val errors, e.g. p95
+  headline: val_youden
 
 baselines:
   rf:
@@ -93,7 +97,10 @@ baselines:
     lr: 1.0e-3
     epochs: 150
     patience: 10
-    batch_size: 64
+    # Training batch size only (latency is always timed on efficiency.batch_size = 64 rows).
+    # 512 rather than 64: recurrent_dropout disables cuDNN, and at 64 the full grid needed
+    # ~28 GPU-hours on a T4. Decision recorded after CHECKPOINT 2.
+    batch_size: 512
 
 efficiency:
   batch_size: 64

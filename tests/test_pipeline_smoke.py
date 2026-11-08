@@ -58,7 +58,8 @@ def test_full_pipeline_smoke(raw_root: Path) -> None:
             assert saved["metrics"]["per_category_test"]
             if model == "sae":
                 assert set(saved["metrics"]["thresholds"]["percentile"]) >= {"p95", "p99"}
-                assert saved["metrics"]["headline_threshold"]["name"] == "val_f1"
+                assert saved["metrics"]["headline_threshold"]["name"] == "val_youden"
+                assert {"val_youden", "val_f1"} <= set(saved["metrics"]["thresholds"])
             scores = np.load(Path(saved["config"]["paths"]["results_raw"]) / "scores"
                              / f"{saved['run']['name']}.npz")
             assert len(scores["test_scores"]) == saved["data"]["split_sizes"]["test"]

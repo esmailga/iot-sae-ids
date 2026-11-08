@@ -8,6 +8,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 
 from ids.detection.threshold import (
     best_f1_threshold,
+    best_youden_threshold,
     evaluate_thresholds,
     headline_key,
     percentile_threshold,
@@ -62,6 +63,31 @@ def test_best_f1_all_attack_cut() -> None:
     assert predict(err, tau).all()
 
 
+def test_best_youden_matches_brute_force() -> None:
+    err, y = _errors(3)
+    tau, j = best_youden_threshold(err, y)
+    p = predict(err, tau)
+    tpr = (p[y == 1] == 1).mean()
+    fpr = (p[y == 0] == 1).mean()
+    assert j == pytest.approx(tpr - fpr)
+    u = np.unique(err)
+    cands = np.r_[u[0] - 1, (u[:-1] + u[1:]) / 2]
+    brute = max((predict(err, t)[y == 1] == 1).mean() - (predict(err, t)[y == 0] == 1).mean()
+                for t in cands)
+    assert j == pytest.approx(brute)
+
+
+def test_youden_ignores_prevalence_where_f1_does_not() -> None:
+    # Attack-majority validation: F1 favours flagging nearly everything; J does not.
+    rng = np.random.default_rng(4)
+    y = np.r_[np.zeros(200, int), np.ones(1800, int)]
+    err = np.r_[rng.normal(0, 1, 200), rng.normal(1.5, 1, 1800)]
+    tau_f1, _ = best_f1_threshold(err, y)
+    tau_j, _ = best_youden_threshold(err, y)
+    fpr = lambda t: predict(err, t)[y == 0].mean()  # noqa: E731
+    assert tau_j > tau_f1 and fpr(tau_j) < fpr(tau_f1)
+
+
 def test_evaluate_thresholds_structure() -> None:
     ev, yv = _errors(1)
     et, yt = _errors(2)
@@ -73,11 +99,14 @@ def test_evaluate_thresholds_structure() -> None:
     fprs = [out["percentile"][k]["val"]["fpr"] for k in ("p90", "p95", "p99")]
     assert fprs == sorted(fprs, reverse=True)
     assert out["val_f1"]["uses_attack_labels"] is True
+    assert out["val_youden"]["uses_attack_labels"] is True
+    assert -1 <= out["val_youden"]["val_youden_j"] <= 1
     assert out["threshold_free"]["test"]["roc_auc"] == pytest.approx(roc_auc_score(yt, et))
 
 
 def test_headline_key() -> None:
     assert headline_key("val_f1") == ("val_f1", None)
+    assert headline_key("val_youden") == ("val_youden", None)
     assert headline_key("p95") == ("percentile", "p95")
     with pytest.raises(ValueError):
         headline_key("bogus")
