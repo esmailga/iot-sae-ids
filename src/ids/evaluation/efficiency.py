@@ -142,6 +142,7 @@ def measure_inference(det: DetectorModel, X: np.ndarray, eff_cfg: dict, seed: in
     """Latency on CPU (always, if enabled) and GPU (TF models, if available) + peak memory."""
     kw = dict(batch_size=int(eff_cfg["batch_size"]), warmup=int(eff_cfg["warmup_batches"]),
               n_batches=int(eff_cfg["timed_batches"]), seed=seed)
+    mem_batches = int(eff_cfg.get("memory_batches", 20))
     out: dict[str, Any] = {}
     if det.uses_tensorflow:
         import tensorflow as tf
@@ -152,11 +153,11 @@ def measure_inference(det: DetectorModel, X: np.ndarray, eff_cfg: dict, seed: in
         if eff_cfg.get("measure_cpu", True):
             with _keras_on_cpu(det):
                 out["cpu"] = time_inference(det.predict_batch, X, **kw)
-                out["memory"] = peak_memory(det.predict_batch, X, kw["batch_size"], seed=seed)
+                out["memory"] = peak_memory(det.predict_batch, X, kw["batch_size"], mem_batches, seed)
     else:
         with _single_thread_sklearn(det) as info:
             out["cpu"] = time_inference(det.predict_batch, X, **kw)
-            out["memory"] = peak_memory(det.predict_batch, X, kw["batch_size"], seed=seed)
+            out["memory"] = peak_memory(det.predict_batch, X, kw["batch_size"], mem_batches, seed)
             out.update(info)
     return out
 

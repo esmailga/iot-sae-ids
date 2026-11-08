@@ -99,6 +99,7 @@ efficiency:
   batch_size: 64
   warmup_batches: 10
   timed_batches: 100
+  memory_batches: 20               # batches run under tracemalloc/psutil for peak memory
   measure_cpu: true
   measure_gpu: true
   tflite: true
