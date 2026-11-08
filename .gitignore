@@ -40,3 +40,5 @@ results/figures/features/*__frac*
 
 # Git bundle for Colab transfer
 *.bundle
+results/best_sae_*__frac*.yaml
+results/tables/sae_tuning_*__frac*

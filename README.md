@@ -9,7 +9,7 @@ A sparse autoencoder (SAE) is trained **only on normal traffic**. A flow is flag
 
 The SAE encoder then acts as a third, non-linear compression stage. The SAE is compared against Random Forest, SVM and LSTM baselines on TON_IoT, UNSW-NB15 and RT-IoT2022. Each model is scored on detection quality and on efficiency, across 5 seeds, with significance tests.
 
-> Status: **Phase 5 — evaluation and smoke tests (CHECKPOINT 2).** Sections marked _TODO_ are filled in during later phases.
+> Status: **Phase 6 — Colab runner, SAE tuning and the full grid.** The pipeline is tagged `v0.1-pipeline`. Sections marked _TODO_ are filled in during later phases.
 
 ## Repository layout
 
@@ -144,26 +144,47 @@ A run is skipped when its JSON already exists; pass `--force` to rerun it.
 
 ### 2. On Google Colab Pro (T4)
 
-There is no GitHub remote yet, so the code reaches Colab as a git bundle on Google Drive:
+1. Upload the raw data to Google Drive at `MyDrive/iot-sae-ids-work/data/raw/<dataset>/`, using the layout from the [Data](#data) section. RT-IoT2022 is optional, because Colab can fetch it from UCI.
+2. Open [`notebooks/colab_runner.ipynb`](notebooks/colab_runner.ipynb) in Colab (File → Open notebook → GitHub → `esmailga/iot-sae-ids`).
+3. Choose a **T4 GPU** runtime, preferably High-RAM.
+4. Run sections 0–2. They mount Drive, clone or update the code from GitHub, install it, and point `IDS_DATA_ROOT` and `IDS_RESULTS_ROOT` at Drive.
+
+Everything the runs produce is stored on Drive, so a disconnect loses nothing. After one, rerun sections 0–2 and then the step you were on. Finished tuning trials and finished runs are skipped.
+
+The notebook can also load the code from a git bundle instead of GitHub (`REPO_SOURCE = "bundle"`). Create one with `git bundle create iot-sae-ids.bundle --all`.
+
+### 3. SAE hyperparameter tuning (notebook section 5)
 
 ```bash
-git bundle create iot-sae-ids.bundle --all     # run in the repo root (the file is git-ignored)
+python scripts/tune_sae.py --dataset ton_iot unsw_nb15 rt_iot2022      # random search, 20 trials each
+python scripts/tune_sae.py --dataset ton_iot --mode grid                # full grid, 216 combinations
 ```
 
-1. Upload `iot-sae-ids.bundle` to `MyDrive/iot-sae-ids-work/`.
-2. Upload the raw data to `MyDrive/iot-sae-ids-work/data/raw/<dataset>/`.
-3. Open `notebooks/colab_runner.ipynb` in Colab and select a T4 runtime.
-4. Run the cells.
+How the search works:
+- **Data:** each trial trains on the normal rows of a stratified 20% subsample of the train split (`tune.subsample`). It uses the seed-0 split and features.
+- **Selection:** by validation ROC-AUC of the reconstruction error. Ties go to the lower validation-normal MSE, then to fewer parameters. The test split is never used.
+- **Search space:** hidden architecture (scaled or fixed), `d_z` ∈ {8, 12, 16, 20} (capped below d), λ ∈ {1e-4, 1e-3, 1e-2}, dropout ∈ {0.2, 0.3, 0.4} and learning rate ∈ {1e-2, 1e-3, 1e-4}.
 
-The notebook does the following:
-- clones the code from the bundle;
-- installs the package;
-- sets `IDS_DATA_ROOT` and `IDS_RESULTS_ROOT` to Drive;
-- runs the tests and the smoke test.
+Outputs:
+- `results/best_sae_<dataset>.yaml`: the best configuration, used automatically by every later SAE run;
+- `results/tables/sae_tuning_<dataset>.md` and `.csv`: all trials, plus the parameter count of the scaled and fixed architectures;
+- `results/tuning/`: raw per-trial logs, for resuming.
 
-After you change the code locally, recreate the bundle and upload it again. The notebook's "Get the code" cell picks up the latest commit. If you later add a GitHub remote, set `REPO_SOURCE = "github"` and `REPO_URL` instead.
+The hyperparameters are chosen on seed 0 and then reused for all 5 seeds. This is standard practice. Rows in seed 0's validation split can fall in another seed's test split, so this is a mild optimistic bias, and it is noted as a limitation.
 
-_TODO (Phases 6–7):_ SAE tuning, the full grid, and the tables and figures.
+### 4. Full grid (notebook section 6)
+
+```bash
+python scripts/run_all.py --dry-run                 # what is left (60 runs = 4 models x 3 datasets x 5 seeds)
+python scripts/run_all.py --models sae rf svm       # 6a
+python scripts/run_all.py --models lstm             # 6b (slowest)
+```
+
+- `run_all.py` is resumable. It skips runs whose JSON exists, logs failures to `results/raw/failures.log` and keeps going.
+- It warns if SAE runs would start before tuning has produced `best_sae_<dataset>.yaml`.
+- To move the results to the local repo, download the zip from notebook section 8 and unzip it in the repo root.
+
+_TODO (Phase 7):_ `make_tables.py`, `make_figures.py` and `results/README.md`.
 
 ## Method notes
 
