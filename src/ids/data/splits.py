@@ -42,9 +42,17 @@ def stratify_key(y_bin: pd.Series, y_multi: pd.Series, min_count: int = MIN_STRA
     crashing ``train_test_split`` on classes with one or two members.
     """
     counts = y_multi.value_counts()
-    rare = y_multi.map(counts) < min_count
-    key = y_multi.astype(str).where(~rare, "__rare_" + y_bin.astype(str))
-    return key.to_numpy()
+    rare = (y_multi.map(counts) < min_count).to_numpy()
+    key = y_multi.astype(str).to_numpy(dtype=object)
+    key[rare] = "__rare_" + y_bin.astype(str).to_numpy()[rare]
+    # A fallback bucket can itself be a singleton (e.g. one rare attack row in a small
+    # sample); fold any group with < 2 members into the largest group.
+    vals, cnt = np.unique(key.astype(str), return_counts=True)
+    tiny = set(vals[cnt < 2])
+    if tiny:
+        largest = vals[np.argmax(cnt)]
+        key = np.where(np.isin(key.astype(str), list(tiny)), largest, key)
+    return key.astype(str)
 
 
 def stratified_subsample(

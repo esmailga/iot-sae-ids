@@ -1,0 +1,16 @@
+Smoke test (sample=0.02, seed=0)
+
+| dataset    | model   | status                  |   wall_s |   d |   n_train |   n_test | variant       |      acc |       f1 |   recall |      fpr |   roc_auc |   train_s |   cpu_ms_per_flow |   gpu_ms_per_flow |   params |   size_mb |
+|:-----------|:--------|:------------------------|---------:|----:|----------:|---------:|:--------------|---------:|---------:|---------:|---------:|----------:|----------:|------------------:|------------------:|---------:|----------:|
+| ton_iot    | sae     | needs TF (run on Colab) |      nan | nan |       nan |      nan | nan           | nan      | nan      | nan      | nan      |  nan      |  nan      |          nan      |               nan |      nan |  nan      |
+| ton_iot    | rf      | ok                      |        0 |  15 |      1903 |      844 | random_forest |   0.9917 |   0.9946 |   0.9984 |   0.03   |    0.9969 |    0.1764 |            0.1033 |               nan |     9474 |    0.7978 |
+| ton_iot    | svm     | ok                      |        0 |  15 |      1903 |      844 | exact_rbf_svc |   0.936  |   0.9593 |   0.9876 |   0.23   |    0.8726 |    0.0205 |            0.0225 |               nan |     2640 |    0.0263 |
+| ton_iot    | lstm    | needs TF (run on Colab) |      nan | nan |       nan |      nan | nan           | nan      | nan      | nan      | nan      |  nan      |  nan      |          nan      |               nan |      nan |  nan      |
+| unsw_nb15  | sae     | needs TF (run on Colab) |      nan | nan |       nan |      nan | nan           | nan      | nan      | nan      | nan      |  nan      |  nan      |          nan      |               nan |      nan |  nan      |
+| unsw_nb15  | rf      | ok                      |        0 |  21 |      2899 |     1646 | random_forest |   0.8177 |   0.8555 |   0.9801 |   0.3811 |    0.96   |    0.2552 |            0.1114 |               nan |    28784 |    2.3426 |
+| unsw_nb15  | svm     | ok                      |        0 |  21 |      2899 |     1646 | exact_rbf_svc |   0.7892 |   0.8388 |   0.9967 |   0.4649 |    0.8955 |    0.0875 |            0.0563 |               nan |    10479 |    0.0954 |
+| unsw_nb15  | lstm    | needs TF (run on Colab) |      nan | nan |       nan |      nan | nan           | nan      | nan      | nan      | nan      |  nan      |  nan      |          nan      |               nan |      nan |  nan      |
+| rt_iot2022 | sae     | needs TF (run on Colab) |      nan | nan |       nan |      nan | nan           | nan      | nan      | nan      | nan      |  nan      |  nan      |          nan      |               nan |      nan |  nan      |
+| rt_iot2022 | rf      | ok                      |        0 |  28 |       322 |      493 | random_forest |   0.9939 |   0.9966 |   0.9977 |   0.0392 |    0.9998 |    0.2245 |            0.1804 |               nan |     2252 |    0.2201 |
+| rt_iot2022 | svm     | ok                      |        0 |  28 |       322 |      493 | exact_rbf_svc |   0.9757 |   0.9866 |   0.9977 |   0.2157 |    0.9873 |    0.0081 |            0.0194 |               nan |     4004 |    0.0365 |
+| rt_iot2022 | lstm    | needs TF (run on Colab) |      nan | nan |       nan |      nan | nan           | nan      | nan      | nan      | nan      |  nan      |  nan      |          nan      |               nan |      nan |  nan      |

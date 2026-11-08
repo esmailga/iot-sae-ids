@@ -119,3 +119,16 @@ def test_resolve_file_case_insensitive_and_bom(tmp_path: Path) -> None:
     p = resolve_file(tmp_path, "Train_Test_Network.csv")
     assert p.name == "train_test_network.csv"
     assert list(_read_csv(p).columns) == ["src_ip", "label"]
+
+
+def test_stratify_key_never_singleton() -> None:
+    from ids.data.splits import stratify_key
+
+    ym = pd.Series(["normal"] * 50 + ["dos"] * 30 + ["fin_scan"])
+    yb = pd.Series([0] * 50 + [1] * 31)
+    key = stratify_key(yb, ym)
+    _, counts = np.unique(key, return_counts=True)
+    assert counts.min() >= 2
+    from sklearn.model_selection import train_test_split
+
+    train_test_split(np.arange(len(ym)), test_size=0.2, stratify=key, random_state=0)

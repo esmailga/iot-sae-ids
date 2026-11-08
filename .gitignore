@@ -37,3 +37,6 @@ venv/
 # Sample/smoke-run feature artefacts
 results/features/*__frac*
 results/figures/features/*__frac*
+
+# Git bundle for Colab transfer
+*.bundle
