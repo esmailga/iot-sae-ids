@@ -5,9 +5,9 @@
   "counts": {
     "raw": 83,
     "after_leakage_drop": 81,
-    "after_preprocess": 88,
-    "after_stage1_pearson": 61,
-    "after_stage2_rf": 32
+    "after_preprocess": 89,
+    "after_stage1_pearson": 63,
+    "after_stage2_rf": 31
   },
   "after_preprocess": [
     "flow_duration",
@@ -95,9 +95,10 @@
     "service=ssl",
     "service=-",
     "service=ntp",
-    "service=dhcp",
     "service=irc",
-    "service=ssh"
+    "service=dhcp",
+    "service=ssh",
+    "service=radius"
   ],
   "pearson_dropped": [
     {
@@ -111,64 +112,74 @@
       "abs_r": 0.9999
     },
     {
+      "dropped": "flow_duration",
+      "kept": "fwd_iat.tot",
+      "abs_r": 0.9998
+    },
+    {
       "dropped": "flow_iat.max",
       "kept": "idle.max",
       "abs_r": 0.9997
     },
     {
-      "dropped": "flow_duration",
-      "kept": "fwd_iat.tot",
-      "abs_r": 0.9987
+      "dropped": "fwd_iat.tot",
+      "kept": "idle.tot",
+      "abs_r": 0.9963
     },
     {
-      "dropped": "bwd_data_pkts_tot",
-      "kept": "flow_pkts_payload.tot",
-      "abs_r": 0.9973
+      "dropped": "fwd_pkts_per_sec",
+      "kept": "flow_pkts_per_sec",
+      "abs_r": 0.9956
     },
     {
-      "dropped": "fwd_iat.max",
-      "kept": "idle.max",
-      "abs_r": 0.9972
+      "dropped": "flow_pkts_per_sec",
+      "kept": "bwd_pkts_per_sec",
+      "abs_r": 0.9954
     },
     {
       "dropped": "flow_pkts_payload.tot",
       "kept": "bwd_pkts_payload.tot",
-      "abs_r": 0.9969
+      "abs_r": 0.9949
+    },
+    {
+      "dropped": "fwd_iat.max",
+      "kept": "idle.max",
+      "abs_r": 0.9942
+    },
+    {
+      "dropped": "bwd_pkts_tot",
+      "kept": "bwd_data_pkts_tot",
+      "abs_r": 0.9937
+    },
+    {
+      "dropped": "bwd_data_pkts_tot",
+      "kept": "bwd_pkts_payload.tot",
+      "abs_r": 0.9934
     },
     {
       "dropped": "idle.max",
       "kept": "idle.avg",
-      "abs_r": 0.9941
-    },
-    {
-      "dropped": "bwd_pkts_tot",
-      "kept": "bwd_header_size_tot",
-      "abs_r": 0.9931
-    },
-    {
-      "dropped": "flow_pkts_per_sec",
-      "kept": "fwd_pkts_per_sec",
-      "abs_r": 0.9924
+      "abs_r": 0.9932
     },
     {
       "dropped": "idle.avg",
       "kept": "idle.min",
-      "abs_r": 0.9923
+      "abs_r": 0.9907
     },
     {
       "dropped": "fwd_header_size_max",
       "kept": "fwd_init_window_size",
-      "abs_r": 0.9907
+      "abs_r": 0.99
     },
     {
       "dropped": "bwd_subflow_pkts",
       "kept": "bwd_subflow_bytes",
-      "abs_r": 0.9898
+      "abs_r": 0.9877
     },
     {
-      "dropped": "fwd_iat.tot",
-      "kept": "idle.tot",
-      "abs_r": 0.9888
+      "dropped": "active.min",
+      "kept": "active.avg",
+      "abs_r": 0.9871
     },
     {
       "dropped": "flow_pkts_payload.max",
@@ -178,62 +189,47 @@
     {
       "dropped": "flow_ACK_flag_count",
       "kept": "bwd_header_size_tot",
-      "abs_r": 0.9834
-    },
-    {
-      "dropped": "flow_SYN_flag_count",
-      "kept": "fwd_init_window_size",
-      "abs_r": 0.9793
+      "abs_r": 0.9799
     },
     {
       "dropped": "bwd_header_size_max",
       "kept": "bwd_header_size_min",
-      "abs_r": 0.9787
+      "abs_r": 0.9783
+    },
+    {
+      "dropped": "flow_SYN_flag_count",
+      "kept": "fwd_init_window_size",
+      "abs_r": 0.9768
+    },
+    {
+      "dropped": "active.max",
+      "kept": "active.avg",
+      "abs_r": 0.9745
     },
     {
       "dropped": "bwd_header_size_tot",
       "kept": "bwd_pkts_payload.tot",
-      "abs_r": 0.9766
-    },
-    {
-      "dropped": "bwd_subflow_bytes",
-      "kept": "bwd_pkts_payload.tot",
-      "abs_r": 0.9707
-    },
-    {
-      "dropped": "fwd_pkts_per_sec",
-      "kept": "bwd_pkts_per_sec",
-      "abs_r": 0.9688
-    },
-    {
-      "dropped": "fwd_bulk_packets",
-      "kept": "fwd_bulk_bytes",
-      "abs_r": 0.9667
-    },
-    {
-      "dropped": "flow_pkts_payload.std",
-      "kept": "bwd_pkts_payload.std",
-      "abs_r": 0.9649
+      "abs_r": 0.9732
     },
     {
       "dropped": "bwd_pkts_payload.max",
       "kept": "bwd_pkts_payload.std",
-      "abs_r": 0.9646
+      "abs_r": 0.9641
     },
     {
-      "dropped": "active.max",
-      "kept": "active.std",
-      "abs_r": 0.9637
+      "dropped": "flow_pkts_payload.std",
+      "kept": "bwd_pkts_payload.std",
+      "abs_r": 0.9628
     },
     {
       "dropped": "flow_iat.std",
       "kept": "idle.min",
-      "abs_r": 0.9609
+      "abs_r": 0.9579
     },
     {
       "dropped": "fwd_pkts_payload.max",
       "kept": "fwd_pkts_payload.std",
-      "abs_r": 0.956
+      "abs_r": 0.9548
     }
   ],
   "after_stage1_pearson": [
@@ -274,11 +270,12 @@
     "payload_bytes_per_second",
     "fwd_subflow_pkts",
     "fwd_subflow_bytes",
+    "bwd_subflow_bytes",
     "fwd_bulk_bytes",
     "bwd_bulk_bytes",
+    "fwd_bulk_packets",
     "fwd_bulk_rate",
     "bwd_bulk_rate",
-    "active.min",
     "active.tot",
     "active.avg",
     "active.std",
@@ -295,106 +292,108 @@
     "service=ssl",
     "service=-",
     "service=ntp",
-    "service=dhcp",
     "service=irc",
-    "service=ssh"
+    "service=dhcp",
+    "service=ssh",
+    "service=radius"
   ],
   "rf_importances": {
-    "flow_iat.min": 0.178857,
-    "fwd_iat.min": 0.144709,
-    "fwd_pkts_payload.avg": 0.094893,
-    "active.min": 0.054181,
-    "fwd_iat.avg": 0.035078,
-    "payload_bytes_per_second": 0.033473,
-    "flow_pkts_payload.min": 0.031173,
-    "active.avg": 0.028988,
-    "bwd_iat.max": 0.027602,
-    "fwd_pkts_payload.tot": 0.027087,
-    "active.tot": 0.023847,
-    "bwd_iat.std": 0.022087,
-    "bwd_iat.min": 0.018021,
-    "fwd_subflow_bytes": 0.017939,
-    "flow_pkts_payload.avg": 0.017857,
-    "bwd_pkts_payload.avg": 0.017815,
-    "bwd_iat.tot": 0.016892,
-    "bwd_pkts_payload.min": 0.015587,
-    "fwd_data_pkts_tot": 0.015581,
-    "fwd_pkts_payload.min": 0.014651,
-    "fwd_PSH_flag_count": 0.014572,
-    "fwd_pkts_payload.std": 0.012198,
-    "bwd_pkts_per_sec": 0.01168,
-    "flow_iat.avg": 0.011068,
-    "bwd_iat.avg": 0.010195,
-    "fwd_subflow_pkts": 0.009691,
-    "bwd_pkts_payload.tot": 0.009009,
-    "bwd_init_window_size": 0.008951,
-    "fwd_header_size_tot": 0.00853,
-    "flow_RST_flag_count": 0.007604,
-    "down_up_ratio": 0.006998,
-    "active.std": 0.00683,
-    "service=-": 0.004662,
-    "fwd_last_window_size": 0.004474,
-    "fwd_iat.std": 0.004417,
-    "bwd_header_size_min": 0.004337,
-    "bwd_PSH_flag_count": 0.004136,
-    "bwd_pkts_payload.std": 0.003652,
-    "fwd_pkts_tot": 0.003264,
-    "fwd_header_size_min": 0.002526,
-    "fwd_init_window_size": 0.002423,
-    "idle.min": 0.002249,
-    "idle.std": 0.001314,
-    "flow_ECE_flag_count": 0.001249,
-    "proto": 0.001138,
-    "service=dns": 0.001063,
-    "flow_CWR_flag_count": 0.001004,
-    "idle.tot": 0.000869,
-    "service=ntp": 0.000746,
-    "flow_FIN_flag_count": 0.0006,
-    "service=mqtt": 0.000477,
-    "service=ssl": 0.000464,
-    "service=http": 0.000318,
-    "service=irc": 0.00022,
-    "bwd_bulk_rate": 0.000166,
-    "bwd_bulk_bytes": 0.000137,
-    "service=dhcp": 0.000135,
-    "fwd_bulk_bytes": 0.000107,
-    "fwd_bulk_rate": 0.000105,
-    "service=ssh": 0.000104,
-    "fwd_URG_flag_count": 0.0
+    "flow_iat.min": 0.19453,
+    "fwd_iat.min": 0.118765,
+    "fwd_pkts_payload.avg": 0.071202,
+    "fwd_iat.avg": 0.051582,
+    "flow_pkts_payload.min": 0.039351,
+    "bwd_iat.tot": 0.034835,
+    "active.tot": 0.031813,
+    "flow_pkts_payload.avg": 0.02779,
+    "bwd_iat.max": 0.027281,
+    "fwd_pkts_payload.tot": 0.02644,
+    "fwd_pkts_payload.min": 0.024383,
+    "payload_bytes_per_second": 0.024379,
+    "flow_iat.avg": 0.023652,
+    "fwd_data_pkts_tot": 0.022945,
+    "active.avg": 0.022935,
+    "bwd_iat.avg": 0.020903,
+    "bwd_iat.min": 0.020831,
+    "bwd_pkts_payload.tot": 0.020504,
+    "bwd_pkts_per_sec": 0.019529,
+    "fwd_subflow_bytes": 0.015443,
+    "bwd_subflow_bytes": 0.015395,
+    "bwd_pkts_payload.avg": 0.014215,
+    "fwd_PSH_flag_count": 0.01375,
+    "bwd_pkts_payload.min": 0.012752,
+    "fwd_subflow_pkts": 0.010862,
+    "active.std": 0.0103,
+    "bwd_init_window_size": 0.010237,
+    "bwd_iat.std": 0.009032,
+    "bwd_pkts_payload.std": 0.007255,
+    "fwd_pkts_payload.std": 0.006552,
+    "fwd_header_size_tot": 0.006525,
+    "fwd_iat.std": 0.006185,
+    "service=-": 0.004432,
+    "flow_RST_flag_count": 0.003733,
+    "fwd_pkts_tot": 0.003574,
+    "fwd_init_window_size": 0.00346,
+    "fwd_last_window_size": 0.002513,
+    "fwd_header_size_min": 0.002189,
+    "down_up_ratio": 0.002063,
+    "service=ssl": 0.0019,
+    "bwd_PSH_flag_count": 0.001729,
+    "bwd_header_size_min": 0.0016,
+    "flow_ECE_flag_count": 0.001473,
+    "flow_FIN_flag_count": 0.001314,
+    "service=dns": 0.001151,
+    "idle.std": 0.001037,
+    "proto": 0.000899,
+    "idle.min": 0.000869,
+    "flow_CWR_flag_count": 0.000767,
+    "idle.tot": 0.000625,
+    "service=ntp": 0.000572,
+    "service=http": 0.000381,
+    "bwd_bulk_rate": 0.000335,
+    "service=mqtt": 0.000333,
+    "bwd_bulk_bytes": 0.000313,
+    "service=irc": 0.000179,
+    "fwd_bulk_rate": 0.000142,
+    "fwd_bulk_packets": 0.000104,
+    "fwd_bulk_bytes": 6.1e-05,
+    "service=dhcp": 4.8e-05,
+    "service=ssh": 2.4e-05,
+    "fwd_URG_flag_count": 2.2e-05,
+    "service=radius": 7e-06
   },
   "after_stage2_rf": [
     "flow_iat.min",
     "fwd_iat.min",
     "fwd_pkts_payload.avg",
-    "active.min",
     "fwd_iat.avg",
-    "payload_bytes_per_second",
     "flow_pkts_payload.min",
-    "active.avg",
+    "bwd_iat.tot",
+    "active.tot",
+    "flow_pkts_payload.avg",
     "bwd_iat.max",
     "fwd_pkts_payload.tot",
-    "active.tot",
-    "bwd_iat.std",
-    "bwd_iat.min",
-    "fwd_subflow_bytes",
-    "flow_pkts_payload.avg",
-    "bwd_pkts_payload.avg",
-    "bwd_iat.tot",
-    "bwd_pkts_payload.min",
-    "fwd_data_pkts_tot",
     "fwd_pkts_payload.min",
-    "fwd_PSH_flag_count",
-    "fwd_pkts_payload.std",
-    "bwd_pkts_per_sec",
+    "payload_bytes_per_second",
     "flow_iat.avg",
+    "fwd_data_pkts_tot",
+    "active.avg",
     "bwd_iat.avg",
-    "fwd_subflow_pkts",
+    "bwd_iat.min",
     "bwd_pkts_payload.tot",
+    "bwd_pkts_per_sec",
+    "fwd_subflow_bytes",
+    "bwd_subflow_bytes",
+    "bwd_pkts_payload.avg",
+    "fwd_PSH_flag_count",
+    "bwd_pkts_payload.min",
+    "fwd_subflow_pkts",
+    "active.std",
     "bwd_init_window_size",
-    "fwd_header_size_tot",
-    "flow_RST_flag_count",
-    "down_up_ratio",
-    "active.std"
+    "bwd_iat.std",
+    "bwd_pkts_payload.std",
+    "fwd_pkts_payload.std",
+    "fwd_header_size_tot"
   ],
   "preprocessor": {
     "n_in": 81,
@@ -493,11 +492,12 @@
         "ssl",
         "-",
         "ntp",
-        "dhcp",
         "irc",
-        "ssh"
+        "dhcp",
+        "ssh",
+        "radius"
       ]
     },
-    "n_out": 88
+    "n_out": 89
   }
 }
