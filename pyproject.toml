@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ids"
+version = "0.1.0"
+description = "Feature-optimised lightweight intrusion detection for IoT using a sparse autoencoder"
+requires-python = ">=3.10"
+readme = "README.md"
+
+[project.optional-dependencies]
+tf = ["tensorflow>=2.16,<3"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "tf: tests that need TensorFlow (skipped when it is not installed)",
+    "slow: slower integration tests",
+]
+filterwarnings = ["ignore::DeprecationWarning"]

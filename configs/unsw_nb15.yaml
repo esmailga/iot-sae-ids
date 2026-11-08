@@ -1,0 +1,12 @@
+# UNSW-NB15 — official partitioned training/testing CSVs.
+dataset:
+  name: unsw_nb15
+  files:
+    train: UNSW_NB15_training-set.csv
+    test: UNSW_NB15_testing-set.csv
+  split_mode: official            # official test set; train -> 87.5/12.5 train/val
+  label_col: label
+  multiclass_col: attack_cat      # "Normal" or attack category
+  dash_is_category: true          # "-" in `service` means no identified service
+  drop_cols:
+    - id                          # row identifier

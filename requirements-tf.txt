@@ -1,0 +1,5 @@
+# TensorFlow stack — needed for the SAE and LSTM. Colab ships with TF preinstalled;
+# installing this file there is a no-op unless the preinstalled version is older.
+# Not installed on the Intel-Mac dev machine (no TF wheels after 2.16.2 for x86_64 macOS).
+-r requirements.txt
+tensorflow>=2.16,<3

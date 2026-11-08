@@ -1,0 +1,24 @@
+# TON_IoT — network dataset (Train_Test_Network.csv), UNSW Canberra.
+dataset:
+  name: ton_iot
+  files: [Train_Test_Network.csv]
+  split_mode: stratified          # stratified 70/10/20
+  label_col: label                # 0 = normal, 1 = attack
+  multiclass_col: type            # "normal" or attack type
+  # "-" means "not applicable" in TON_IoT (e.g. no DNS fields on a non-DNS flow); it is kept
+  # as its own category for categorical columns, not treated as missing.
+  dash_is_category: true
+  drop_cols:
+    # Flow identifiers / timestamps — leakage control
+    - ts
+    - src_ip
+    - dst_ip
+    - src_port
+    - dst_port
+    # Free-text / identifier-like application fields (domain names, cert subjects, URIs,
+    # user agents). PROPOSED — confirm at CHECKPOINT 1.
+    - dns_query
+    - ssl_subject
+    - ssl_issuer
+    - http_uri
+    - http_user_agent

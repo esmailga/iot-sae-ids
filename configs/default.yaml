@@ -1,0 +1,97 @@
+# Shared settings for every dataset. Dataset files (configs/<dataset>.yaml) are merged on top,
+# then CLI overrides (--set key.sub=value). Paths are relative to the repo root unless the
+# IDS_DATA_ROOT / IDS_RESULTS_ROOT environment variables are set (e.g. to a Google Drive folder).
+
+seeds: [0, 1, 2, 3, 4]
+
+paths:
+  data_root: data            # contains raw/<dataset>/ and processed/
+  results_root: results      # contains raw/, tables/, figures/, models/
+
+logging:
+  level: INFO
+
+split:
+  train: 0.70
+  val: 0.10
+  test: 0.20
+  # UNSW-NB15 only: fraction of the official training set held out as validation.
+  unsw_val_fraction: 0.125
+
+preprocess:
+  dedup_train: true
+  missing_drop_threshold: 0.05     # drop a column if > 5% missing on train
+  label_encode_max_categories: 5   # <= this many categories -> label encoding, else one-hot
+  onehot_top_k: 10                 # keep top-k categories per one-hot column, rest -> "other"
+  clip_eval_to_unit: true          # clip transformed val/test to [0, 1]
+
+features:
+  pearson_threshold: 0.95
+  rf_n_estimators: 100
+  rf_cumulative_importance: 0.95
+  # Max rows used to fit the RF importance selector (stratified subsample of train, 0 = all).
+  rf_max_rows: 200000
+
+sae:
+  hidden: scaled                   # scaled | fixed
+  scaled_ratios: [0.75, 0.5]       # hidden widths = ceil(ratio * d)
+  fixed_hidden: [128, 64, 32]      # the proposal's architecture, as a comparison point
+  latent_dim: 16                   # capped below d at build time
+  l1: 1.0e-3
+  dropout: 0.2
+  lr: 1.0e-3
+  lr_decay_rate: 0.96
+  lr_decay_steps: 1000
+  epochs: 150
+  patience: 10
+  batch_size: 64
+
+tune:
+  mode: random                     # random | grid
+  n_trials: 20
+  subsample: 0.20                  # stratified fraction of the train split used for tuning
+  epochs: 150
+  space:
+    hidden: [scaled, fixed]
+    latent_dim: [8, 12, 16, 20]
+    l1: [1.0e-4, 1.0e-3, 1.0e-2]
+    dropout: [0.2, 0.3, 0.4]
+    lr: [1.0e-2, 1.0e-3, 1.0e-4]
+
+threshold:
+  percentiles: [90, 95, 97.5, 99, 99.5, 99.9]
+  headline: val_f1                 # val_f1 | p<percentile>, e.g. p95
+
+baselines:
+  rf:
+    n_estimators: 100
+    criterion: gini
+    max_depth: null
+    n_jobs: -1
+  svm:
+    exact_max_rows: 100000         # <= this many train rows -> exact RBF SVC
+    C: 1.0
+    gamma: scale
+    nystroem_components: 500
+    sgd_alpha: 1.0e-4
+    sgd_max_iter: 1000
+    sgd_tol: 1.0e-3
+  lstm:
+    units: [128, 64]
+    recurrent_dropout: 0.3
+    lr: 1.0e-3
+    epochs: 150
+    patience: 10
+    batch_size: 64
+
+efficiency:
+  batch_size: 64
+  warmup_batches: 10
+  timed_batches: 100
+  measure_cpu: true
+  measure_gpu: true
+  tflite: true
+
+stats:
+  alpha: 0.05
+  metrics: [f1, recall, accuracy]

@@ -1,0 +1,35 @@
+# Data — never commit datasets
+data/*
+!data/README.md
+
+# Raw per-run results and model artefacts
+results/raw/
+results/models/
+results/tuning/
+*.keras
+*.h5
+*.joblib
+*.pkl
+*.tflite
+*.npz
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+venv/
+.env
+
+# Notebooks / OS / editors
+.ipynb_checkpoints/
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,1 @@
+"""ids.detection subpackage."""

@@ -1,0 +1,17 @@
+# RT-IoT2022 — UCI Machine Learning Repository, dataset id 942.
+dataset:
+  name: rt_iot2022
+  uci_id: 942
+  files: [RT_IOT2022.csv]         # local fallback if ucimlrepo download fails
+  split_mode: stratified
+  label_col: null                 # no binary column; derived from multiclass_col via mapping
+  multiclass_col: Attack_type
+  dash_is_category: true
+  drop_cols:
+    - id.orig_p                   # source port
+    - id.resp_p                   # destination port
+    - "Unnamed: 0"                # CSV index column, if present
+  # Normal (benign device) traffic classes. Everything else = attack.
+  # PROPOSED — must be confirmed at CHECKPOINT 1; loading raises until confirmed.
+  normal_classes: []
+  label_mapping_confirmed: false
