@@ -9,7 +9,7 @@ A sparse autoencoder (SAE) is trained **only on normal traffic**. A flow is flag
 
 The SAE encoder then acts as a third, non-linear compression stage. The SAE is compared against Random Forest, SVM and LSTM baselines on TON_IoT, UNSW-NB15 and RT-IoT2022. Each model is scored on detection quality and on efficiency, across 5 seeds, with significance tests.
 
-> Status: **Phase 1 — scaffold.** Sections marked _TODO_ are filled in during later phases.
+> Status: **Phase 2 — data loaders (CHECKPOINT 1).** Sections marked _TODO_ are filled in during later phases.
 
 ## Repository layout
 
@@ -67,11 +67,37 @@ Put the raw files under `data/raw/<dataset>/`:
 | UNSW-NB15 | `data/raw/unsw_nb15/UNSW_NB15_training-set.csv` and `UNSW_NB15_testing-set.csv` | <https://research.unsw.edu.au/projects/unsw-nb15-dataset>. Use the "Training and Testing Sets" folder. |
 | RT-IoT2022 | Downloaded automatically from UCI (id 942) via `ucimlrepo`. Offline fallback: `data/raw/rt_iot2022/RT_IOT2022.csv` | <https://archive.ics.uci.edu/dataset/942/rt-iot2022> |
 
-_TODO (Phase 2):_ the actual row and feature counts, and any differences from the proposal.
+Run `python scripts/inspect_data.py` to regenerate the per-dataset reports in `results/tables/inspect_<dataset>.md`.
+
+### Actual sizes vs. the proposal
+
+| Dataset | Proposal | Actual (file used here) | Note |
+|---|---|---|---|
+| TON_IoT | "~4M records" | _pending file_ (the `Train_Test_Network.csv` release is documented at ≈461k rows) | The ~22M-row / multi-million figures refer to the full raw network captures, not the train/test file used here. |
+| UNSW-NB15 | — | _pending files_ (official split documented as 175,341 train / 82,332 test) | |
+| RT-IoT2022 | "~3.5M records" | **123,117 rows, 83 features** (+ `Attack_type`) | UCI id 942. 3 benign device classes (MQTT_Publish, Thing_Speak, Wipro_bulb), 9 attack classes. No Amazon-Alexa class is present in the UCI release. 89.8% of rows are attacks, 76.9% are DOS_SYN_Hping. |
 
 ### Dropped columns (leakage control)
 
-_TODO (Phase 2):_ the final list of dropped columns per dataset, with reasons. For now, see `drop_cols` in each `configs/<dataset>.yaml`.
+| Dataset | Dropped | Reason |
+|---|---|---|
+| TON_IoT | `ts` | Timestamp |
+| TON_IoT | `src_ip`, `dst_ip` | Host identifiers |
+| TON_IoT | `src_port`, `dst_port` | Flow identifiers. Ephemeral source ports in particular are near-unique per flow. |
+| TON_IoT | `dns_query`, `ssl_subject`, `ssl_issuer`, `http_uri`, `http_user_agent` | Free-text, identifier-like fields: domain names, certificate subjects, URIs, user agents. _Proposed; awaiting confirmation._ |
+| UNSW-NB15 | `id` | Row identifier |
+| RT-IoT2022 | `id.orig_p`, `id.resp_p` | Source and destination ports |
+
+Preprocessing also drops these columns, based on the train split only:
+
+- columns with more than 5% missing values;
+- constant (zero-variance) columns, e.g. RT-IoT2022's `bwd_URG_flag_count`.
+
+The preprocessing logs list them.
+
+### RT-IoT2022 label mapping
+
+Binary label: rows whose `Attack_type` is a benign device class get 0, and all other rows get 1. The mapping lives in `configs/rt_iot2022.yaml` (`normal_classes`). Loading raises an error until `label_mapping_confirmed: true` is set.
 
 ## Reproducing the results
 
