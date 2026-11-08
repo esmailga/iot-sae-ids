@@ -16,7 +16,7 @@ dataset:
     - src_port
     - dst_port
     # Free-text / identifier-like application fields (domain names, cert subjects, URIs,
-    # user agents). PROPOSED — confirm at CHECKPOINT 1.
+    # user agents). Confirmed by the user at CHECKPOINT 1.
     - dns_query
     - ssl_subject
     - ssl_issuer

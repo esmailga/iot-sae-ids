@@ -12,6 +12,6 @@ dataset:
     - id.resp_p                   # destination port
     - "Unnamed: 0"                # CSV index column, if present
   # Normal (benign device) traffic classes. Everything else = attack.
-  # PROPOSED — must be confirmed at CHECKPOINT 1; loading raises until confirmed.
-  normal_classes: []
-  label_mapping_confirmed: false
+  # Confirmed by the user at CHECKPOINT 1 (2026-11-09). The UCI release has no Amazon-Alexa class.
+  normal_classes: [MQTT_Publish, Thing_Speak, Wipro_bulb]
+  label_mapping_confirmed: true

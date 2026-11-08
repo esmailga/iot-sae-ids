@@ -19,7 +19,16 @@ split:
   unsw_val_fraction: 0.125
 
 preprocess:
-  dedup_train: true
+  # Exact-duplicate removal (features after leakage drops + multiclass label):
+  #   dataset -> on the whole dataset BEFORE splitting, so no row has a copy across splits.
+  #              Default, confirmed at CHECKPOINT 1. For UNSW-NB15 it runs within each official file.
+  #   train   -> on the train split only.
+  #   none    -> keep duplicates.
+  dedup_scope: dataset
+  # Impossible-value rules: numeric columns whose lower-cased name contains any of these
+  # substrings must be >= 0; port columns must lie in [0, 65535].
+  nonnegative_patterns: [dur, byte, len, pkt, size, iat, active, idle, rate, load, jit]
+  port_patterns: [port, .orig_p, .resp_p]
   missing_drop_threshold: 0.05     # drop a column if > 5% missing on train
   label_encode_max_categories: 5   # <= this many categories -> label encoding, else one-hot
   onehot_top_k: 10                 # keep top-k categories per one-hot column, rest -> "other"

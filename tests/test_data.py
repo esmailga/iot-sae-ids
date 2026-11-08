@@ -41,9 +41,11 @@ def test_unsw_has_official_test(raw_root: Path) -> None:
 
 
 def test_rt_iot_requires_confirmation(raw_root: Path) -> None:
+    unconfirmed = load_config("rt_iot2022", ["dataset.label_mapping_confirmed=false",
+                                             "dataset.normal_classes=[]"])
     with pytest.raises(LabelMappingNotConfirmed):
-        load_dataset(load_config("rt_iot2022"))
-    data = load_dataset(load_config("rt_iot2022"), allow_unconfirmed=True)
+        load_dataset(unconfirmed)
+    data = load_dataset(unconfirmed, allow_unconfirmed=True)
     assert data.y_bin.sum() > 0
 
 
