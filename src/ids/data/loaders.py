@@ -41,13 +41,34 @@ class LoadedData:
 
 # ----------------------------------------------------------------------------- helpers
 
+def resolve_file(base: Path, name: str) -> Path:
+    """Return ``base / name``, matching the file name case-insensitively if needed.
+
+    macOS filesystems are case-insensitive but Colab/Linux is not, and dataset mirrors differ
+    in capitalisation (e.g. ``train_test_network.csv`` vs ``Train_Test_Network.csv``).
+    """
+    exact = base / name
+    if not base.is_dir():
+        return exact
+    # Prefer an exact match, then a case-insensitive one, using real on-disk names
+    # (on a case-insensitive filesystem `exact.is_file()` is True for any capitalisation).
+    files = [c for c in base.iterdir() if c.is_file()]
+    for cand in files:
+        if cand.name == name:
+            return cand
+    for cand in files:
+        if cand.name.lower() == name.lower():
+            return cand
+    return exact
+
+
 def _read_csv(path: Path) -> pd.DataFrame:
     if not path.is_file():
         raise FileNotFoundError(
             f"Raw file not found: {path}. See README 'Data' section for download instructions."
         )
     logger.info("Reading %s", path)
-    return pd.read_csv(path, low_memory=False)
+    return pd.read_csv(path, low_memory=False, encoding="utf-8-sig")
 
 
 def _strip_strings(df: pd.DataFrame) -> pd.DataFrame:
@@ -121,7 +142,7 @@ def _normalise_multiclass(s: pd.Series) -> pd.Series:
 def load_ton_iot(cfg: dict, drop: bool = True) -> LoadedData:
     """Load TON_IoT network data (``Train_Test_Network.csv``)."""
     ds = cfg["dataset"]
-    path = Path(cfg["paths"]["raw_dir"]) / "ton_iot" / ds["files"][0]
+    path = resolve_file(Path(cfg["paths"]["raw_dir"]) / "ton_iot", ds["files"][0])
     df = _strip_strings(_read_csv(path))
     y_bin = pd.to_numeric(df[ds["label_col"]], errors="raise")
     y_multi = _normalise_multiclass(df[ds["multiclass_col"]])
@@ -141,7 +162,7 @@ def load_unsw_nb15(cfg: dict, drop: bool = True) -> LoadedData:
     parts: dict[str, XY] = {}
     dropped: tuple[str, ...] = ()
     for part in ("train", "test"):
-        df = _strip_strings(_read_csv(base / ds["files"][part]))
+        df = _strip_strings(_read_csv(resolve_file(base, ds["files"][part])))
         y_bin = pd.to_numeric(df[ds["label_col"]], errors="raise")
         y_multi = _normalise_multiclass(df[ds["multiclass_col"]])
         _check_label_consistency(y_bin, y_multi, f"unsw_nb15/{part}")
@@ -177,7 +198,7 @@ def propose_rt_iot_normal_classes(labels: pd.Series) -> list[str]:
 def _rt_iot_raw(cfg: dict) -> pd.DataFrame:
     """Return the raw RT-IoT2022 frame: local CSV cache first, else UCI (and cache it)."""
     ds = cfg["dataset"]
-    local = Path(cfg["paths"]["raw_dir"]) / "rt_iot2022" / ds["files"][0]
+    local = resolve_file(Path(cfg["paths"]["raw_dir"]) / "rt_iot2022", ds["files"][0])
     if local.is_file():
         return _read_csv(local)
     logger.info("Local RT-IoT2022 CSV not found; fetching UCI dataset id %s", ds["uci_id"])
@@ -251,7 +272,7 @@ def raw_file_paths(cfg: dict) -> list[Path]:
     base = Path(cfg["paths"]["raw_dir"]) / ds["name"]
     files = ds["files"]
     names = list(files.values()) if isinstance(files, dict) else list(files)
-    return [base / f for f in names]
+    return [resolve_file(base, f) for f in names]
 
 
 __all__ = [

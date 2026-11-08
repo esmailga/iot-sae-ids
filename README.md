@@ -73,15 +73,15 @@ Run `python scripts/inspect_data.py` to regenerate the per-dataset reports in `r
 
 | Dataset | Proposal | Actual (file used here) | Note |
 |---|---|---|---|
-| TON_IoT | "~4M records" | _pending file_ (the `Train_Test_Network.csv` release is documented at ≈461k rows) | The ~22M-row / multi-million figures refer to the full raw network captures, not the train/test file used here. |
-| UNSW-NB15 | — | _pending files_ (official split documented as 175,341 train / 82,332 test) | |
+| TON_IoT | "~4M records" | **211,043 rows, 42 features** (+ `label`, `type`) → 33 after leakage drops | The multi-million figures refer to the full raw network captures, not the curated train/test file used here. This release has no `ts` column. 50,000 normal rows; 20,000 per attack type except `mitm` (1,043). 9.75% exact duplicates. The file may be named in lower case; the loader matches names case-insensitively. |
+| UNSW-NB15 | — | **175,341 official train / 82,332 official test, 43 features** (+ `label`, `attack_cat`) → 42 after dropping `id` | Normal share is 31.9% in train vs 44.9% in test. `proto` has 133 categories, so it is one-hot encoded as the top 10 + `other`. |
 | RT-IoT2022 | "~3.5M records" | **123,117 rows, 83 features** (+ `Attack_type`) | UCI id 942. 3 benign device classes (MQTT_Publish, Thing_Speak, Wipro_bulb), 9 attack classes. No Amazon-Alexa class is present in the UCI release. 89.8% of rows are attacks, 76.9% are DOS_SYN_Hping. |
 
 ### Dropped columns (leakage control)
 
 | Dataset | Dropped | Reason |
 |---|---|---|
-| TON_IoT | `ts` | Timestamp |
+| TON_IoT | `ts` | Timestamp (configured; absent from the current release) |
 | TON_IoT | `src_ip`, `dst_ip` | Host identifiers |
 | TON_IoT | `src_port`, `dst_port` | Flow identifiers. Ephemeral source ports in particular are near-unique per flow. |
 | TON_IoT | `dns_query`, `ssl_subject`, `ssl_issuer`, `http_uri`, `http_user_agent` | Free-text, identifier-like fields: domain names, certificate subjects, URIs, user agents. _Proposed; awaiting confirmation._ |
@@ -92,6 +92,8 @@ Preprocessing also drops these columns, based on the train split only:
 
 - columns with more than 5% missing values;
 - constant (zero-variance) columns, e.g. RT-IoT2022's `bwd_URG_flag_count`.
+
+For TON_IoT, `-` means "not applicable". It is kept as a category in categorical columns. In otherwise-numeric columns it becomes missing, so `http_trans_depth`, `http_version` and `weird_addl` (each over 99.8% missing) are dropped by the 5% rule.
 
 The preprocessing logs list them.
 

@@ -108,3 +108,12 @@ def test_subsample(raw_root: Path) -> None:
     assert len(sub.X) == pytest.approx(len(data.X) * 0.5, abs=2)
     assert len(sub.test[0]) == pytest.approx(len(data.test[0]) * 0.5, abs=2)
     assert np.isclose(sub.y_bin.mean(), data.y_bin.mean(), atol=0.03)
+
+
+def test_resolve_file_case_insensitive_and_bom(tmp_path: Path) -> None:
+    from ids.data.loaders import _read_csv, resolve_file
+
+    (tmp_path / "train_test_network.csv").write_bytes("﻿src_ip,label\n1.2.3.4,0\n".encode())
+    p = resolve_file(tmp_path, "Train_Test_Network.csv")
+    assert p.name == "train_test_network.csv"
+    assert list(_read_csv(p).columns) == ["src_ip", "label"]
