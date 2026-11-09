@@ -101,6 +101,15 @@ The preprocessing logs list them.
 
 Binary label: rows whose `Attack_type` is a benign device class get 0, and all other rows get 1. The mapping lives in `configs/rt_iot2022.yaml` (`normal_classes`). Loading raises an error until `label_mapping_confirmed: true` is set.
 
+### Attack types
+
+Between them, the datasets record 27 attack types:
+- **TON_IoT** (9): backdoor, ddos, dos, injection, password, ransomware, scanning, xss and mitm.
+- **UNSW-NB15** (9): Generic, Exploits, Fuzzers, DoS, Reconnaissance, Analysis, Backdoor, Shellcode and Worms.
+- **RT-IoT2022** (9): a SYN flood, ARP poisoning, five NMAP scan types, Slowloris DDoS and SSH brute force.
+
+[`results/README.md`](results/README.md#attack-types-and-sae-detection-per-attack) lists every type with its row count, a short description and how much of it the SAE detected.
+
 ### Duplicates
 
 Exact duplicates are removed **from the train split only**: `preprocess.dedup_scope: train`, as in the original spec. Val and test keep theirs. Once identifiers and ports are dropped, many flows become identical. This happens especially with volumetric attacks, so the train-only step removes a lot of rows (seed 0):

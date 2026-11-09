@@ -47,6 +47,63 @@ How each model's predictions are made:
 6. **The threshold choice matters.** The unsupervised percentile thresholds (p90–p99.9 of normal validation error) hold FPR at or below 3.5% on TON_IoT, but recall collapses there (0.18 at p95). The validation-F1 threshold reaches F1 0.894, but at FPR 0.56. Youden's J sits between the two, at F1 0.823 and FPR 0.25. Source: [`tables/sae_thresholds_*.md`](tables/).
 7. **Feature reduction is 42/43/83 raw columns → 19/25–27/31–33 after Stage 2 → an SAE latent of 12/16/20** (TON_IoT/UNSW-NB15/RT-IoT2022). In tuning, the input-scaled architecture `[⌈0.75d⌉, ⌈0.5d⌉] → d_z` beat the proposal's fixed `128 → 64 → 32` on all three datasets. Sources: [`tables/features_summary.md`](tables/features_summary.md) and [`tables/sae_tuning_*.md`](tables/).
 
+## Attack types and SAE detection per attack
+
+The three datasets record 27 attack types between them, grouped here into 9 broad families.
+- **Rows:** the count in the raw files. For UNSW-NB15 this is official train / official test.
+- **SAE detected:** the share of test flows of that type flagged as attacks, averaged over 5 seeds, at the Youden's J threshold.
+- **Full tables:** all four models, with standard deviations, are in [`tables/per_category_<dataset>.md`](tables/).
+
+### TON_IoT: 9 attack types, plus 50,000 normal flows
+
+| Attack | Rows | What it is | SAE detected |
+|---|---|---|---|
+| backdoor | 20,000 | Hidden remote access to a compromised device | 100% |
+| ddos | 20,000 | Distributed flooding from many sources | 83% |
+| dos | 20,000 | Flooding from a single source | 91% |
+| injection | 20,000 | Malicious input, e.g. SQL or command injection | 66% (varies a lot by seed) |
+| password | 20,000 | Password guessing and cracking | 69% (varies a lot by seed) |
+| ransomware | 20,000 | Malware that encrypts data for ransom | 92% |
+| scanning | 20,000 | Probing hosts and ports | **21%** |
+| xss | 20,000 | Cross-site scripting against web apps | 85% |
+| mitm | 1,043 | Man-in-the-middle interception | 55% |
+
+### UNSW-NB15: 9 attack categories, plus 56,000 / 37,000 normal flows
+
+| Attack | Rows (train / test) | What it is | SAE detected |
+|---|---|---|---|
+| Generic | 40,000 / 18,871 | Attacks that work against any block cipher regardless of key | 99.5% |
+| Exploits | 33,393 / 11,132 | Exploiting known software vulnerabilities | 73% |
+| Fuzzers | 18,184 / 6,062 | Sending random or malformed input to crash services | 100% |
+| DoS | 12,264 / 4,089 | Denial of service | 91% |
+| Reconnaissance | 10,491 / 3,496 | Information gathering, scanning | 99.9% |
+| Analysis | 2,000 / 677 | Port scans, spam, HTML-file penetration | 94% |
+| Backdoor | 1,746 / 583 | Bypassing authentication for covert access | 99% |
+| Shellcode | 1,133 / 378 | Injected code payloads | 100% |
+| Worms | 130 / 44 | Self-replicating malware | 100% (only 44 test rows) |
+
+### RT-IoT2022: 9 attack types, plus 3 normal device types
+
+| Attack | Rows | What it is | SAE detected |
+|---|---|---|---|
+| DOS_SYN_Hping | 94,659 | SYN flood generated with hping3 | 97% |
+| ARP_poisioning | 7,750 | ARP spoofing to redirect LAN traffic (the misspelling is the dataset's own label) | **36%** |
+| NMAP_UDP_SCAN | 2,590 | UDP port scan | **13%** |
+| NMAP_XMAS_TREE_SCAN | 2,010 | Scan with the FIN, PSH and URG flags set | 57% |
+| NMAP_OS_DETECTION | 2,000 | Operating-system fingerprinting | 59% |
+| NMAP_TCP_scan | 1,002 | TCP connect scan | 81% |
+| DDOS_Slowloris | 534 | Holding many slow HTTP connections open | 84% |
+| Metasploit_Brute_Force_SSH | 37 | SSH password brute force | 91% (only 7 test rows) |
+| NMAP_FIN_SCAN | 28 | Stealth scan using FIN packets | 23% (only 6 test rows) |
+
+RT-IoT2022's normal traffic comes from three device types: `Thing_Speak` (8,108 rows), `MQTT_Publish` (4,146) and `Wipro_bulb` (253). The SAE wrongly flags 56% of the Wipro bulb's flows.
+
+### Pattern across datasets
+
+The families overlap across the datasets: DoS/DDoS, scanning and reconnaissance, backdoors, brute force, and exploits or injection.
+
+The SAE catches volume and flood attacks well: Generic, Fuzzers, SYN flood, DoS and backdoor are all above 90%. It misses **scanning and spoofing**: TON_IoT `scanning` at 21%, the NMAP UDP and FIN scans, and ARP poisoning. Those flows look much like normal traffic, so reconstruction error doesn't separate them. RF detects nearly all of these, because it learns from attack labels.
+
 ## Caveats
 
 - **The LSTM is incomplete:** 0/5 runs on UNSW-NB15 and RT-IoT2022. Any "SAE vs LSTM" statement rests on TON_IoT alone.
