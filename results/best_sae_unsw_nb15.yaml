@@ -1,0 +1,23 @@
+dataset: unsw_nb15
+selected_by: 'max validation ROC-AUC of reconstruction error (ties: lower val-normal
+  MSE, fewer params)'
+params:
+  hidden: scaled
+  latent_dim: 16
+  l1: 0.01
+  dropout: 0.2
+  lr: 0.01
+val_roc_auc: 0.8755711795912895
+val_pr_auc: 0.9170502424902555
+best_val_normal_mse: 0.03407848998904228
+n_params: 2563
+hidden_widths:
+- 21
+- 14
+d: 27
+search:
+  mode: random
+  n_trials_done: 20
+  subsample: 0.2
+  seed: 0
+updated_utc: '2026-11-09T00:06:53.810684+00:00'

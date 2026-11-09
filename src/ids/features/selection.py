@@ -165,28 +165,7 @@ def plot_correlation_heatmap(corr: pd.DataFrame, path: str | Path, title: str = 
 
 def plot_rf_importance(importances: pd.Series, n_selected: int, path: str | Path,
                        title: str = "", cumulative: float = 0.95, max_show: int = 40) -> None:
-    """Save a bar chart of RF importances with the cumulative curve and selection cut-off."""
-    import matplotlib
+    """Save the RF importance figure (bars + cumulative curve as two stacked panels)."""
+    from ids.figures import rf_importance_bars
 
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
-    imp = importances.iloc[:max_show]
-    cum = importances.cumsum() / max(importances.sum(), 1e-12)
-    fig, ax = plt.subplots(figsize=(max(7.0, 0.28 * len(imp)), 4.8))
-    colors = ["#2b6cb0" if i < n_selected else "#a0aec0" for i in range(len(imp))]
-    ax.bar(range(len(imp)), imp.to_numpy(), color=colors)
-    ax.set_xticks(range(len(imp)), imp.index, rotation=90, fontsize=7)
-    ax.set_ylabel("MDI importance")
-    ax2 = ax.twinx()
-    ax2.plot(range(len(imp)), cum.iloc[:max_show].to_numpy(), color="#c05621", marker=".")
-    ax2.axhline(cumulative, color="#c05621", ls="--", lw=0.8)
-    ax2.set_ylim(0, 1.02)
-    ax2.set_ylabel("Cumulative importance")
-    if n_selected <= len(imp):
-        ax.axvline(n_selected - 0.5, color="k", ls=":", lw=0.8)
-    ax.set_title(f"{title}  (kept {n_selected} / {len(importances)})")
-    fig.tight_layout()
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=300)
-    plt.close(fig)
+    rf_importance_bars(importances, n_selected, title, Path(path), cumulative, max_show)

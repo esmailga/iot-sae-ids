@@ -1,0 +1,18 @@
+# Run coverage
+
+- 50 of 60 planned runs found.
+
+| Dataset    | Model   | Runs   | Missing seeds   |
+|:-----------|:--------|:-------|:----------------|
+| TON_IoT    | SAE     | 5/5    | —               |
+| TON_IoT    | RF      | 5/5    | —               |
+| TON_IoT    | SVM     | 5/5    | —               |
+| TON_IoT    | LSTM    | 5/5    | —               |
+| UNSW-NB15  | SAE     | 5/5    | —               |
+| UNSW-NB15  | RF      | 5/5    | —               |
+| UNSW-NB15  | SVM     | 5/5    | —               |
+| UNSW-NB15  | LSTM    | 0/5    | 0, 1, 2, 3, 4   |
+| RT-IoT2022 | SAE     | 5/5    | —               |
+| RT-IoT2022 | RF      | 5/5    | —               |
+| RT-IoT2022 | SVM     | 5/5    | —               |
+| RT-IoT2022 | LSTM    | 0/5    | 0, 1, 2, 3, 4   |

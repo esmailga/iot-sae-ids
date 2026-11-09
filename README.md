@@ -9,7 +9,7 @@ A sparse autoencoder (SAE) is trained **only on normal traffic**. A flow is flag
 
 The SAE encoder then acts as a third, non-linear compression stage. The SAE is compared against Random Forest, SVM and LSTM baselines on TON_IoT, UNSW-NB15 and RT-IoT2022. Each model is scored on detection quality and on efficiency, across 5 seeds, with significance tests.
 
-> Status: **Phase 6 — Colab runner, SAE tuning and the full grid.** The pipeline is tagged `v0.1-pipeline`. Sections marked _TODO_ are filled in during later phases.
+> Status: **Phase 7: results.** 50 of 60 runs are complete; 10 LSTM runs are still pending. See [`results/README.md`](results/README.md).
 
 ## Repository layout
 
@@ -184,7 +184,14 @@ python scripts/run_all.py --models lstm             # 6b (slowest)
 - It warns if SAE runs would start before tuning has produced `best_sae_<dataset>.yaml`.
 - To move the results to the local repo, download the zip from notebook section 8 and unzip it in the repo root.
 
-_TODO (Phase 7):_ `make_tables.py`, `make_figures.py` and `results/README.md`.
+### 5. Tables and figures
+
+```bash
+python scripts/make_tables.py     # results/tables/*.md and *.csv
+python scripts/make_figures.py    # results/figures/*.png at 300 dpi; the Pearson heatmap needs the local dataset or cache
+```
+
+Both scripts read `results/raw/*.json` and work on a partial grid: every cell shows how many runs it is based on, and `results/tables/run_coverage.md` lists any missing runs. The results summary is in [`results/README.md`](results/README.md).
 
 ## Method notes
 

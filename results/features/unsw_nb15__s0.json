@@ -83,8 +83,8 @@
   ],
   "pearson_dropped": [
     {
-      "dropped": "ct_ftp_cmd",
-      "kept": "is_ftp_login",
+      "dropped": "is_ftp_login",
+      "kept": "ct_ftp_cmd",
       "abs_r": 1.0
     },
     {
@@ -151,7 +151,7 @@
     "ct_src_dport_ltm",
     "ct_dst_sport_ltm",
     "ct_dst_src_ltm",
-    "is_ftp_login",
+    "ct_ftp_cmd",
     "ct_flw_http_mthd",
     "ct_src_ltm",
     "ct_srv_dst",
@@ -234,7 +234,7 @@
     "service=smtp": 0.00049,
     "service=ftp-data": 0.000448,
     "proto=ospf": 0.000409,
-    "is_ftp_login": 0.000336,
+    "ct_ftp_cmd": 0.000336,
     "proto=unas": 0.000266,
     "service=ssh": 0.0002,
     "state=ECO": 6.6e-05,

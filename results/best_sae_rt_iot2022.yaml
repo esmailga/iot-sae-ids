@@ -1,0 +1,23 @@
+dataset: rt_iot2022
+selected_by: 'max validation ROC-AUC of reconstruction error (ties: lower val-normal
+  MSE, fewer params)'
+params:
+  hidden: scaled
+  latent_dim: 20
+  l1: 0.0001
+  dropout: 0.2
+  lr: 0.0001
+val_roc_auc: 0.9446884224832413
+val_pr_auc: 0.9918123172127353
+best_val_normal_mse: 0.018609682098031044
+n_params: 3347
+hidden_widths:
+- 24
+- 16
+d: 31
+search:
+  mode: random
+  n_trials_done: 20
+  subsample: 0.2
+  seed: 0
+updated_utc: '2026-11-09T00:18:15.913929+00:00'

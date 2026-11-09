@@ -1,0 +1,23 @@
+dataset: ton_iot
+selected_by: 'max validation ROC-AUC of reconstruction error (ties: lower val-normal
+  MSE, fewer params)'
+params:
+  hidden: scaled
+  latent_dim: 12
+  l1: 0.001
+  dropout: 0.3
+  lr: 0.01
+val_roc_auc: 0.8637810369450482
+val_pr_auc: 0.9486456929671369
+best_val_normal_mse: 0.011740484274923801
+n_params: 1391
+hidden_widths:
+- 15
+- 10
+d: 19
+search:
+  mode: random
+  n_trials_done: 20
+  subsample: 0.2
+  seed: 0
+updated_utc: '2026-11-08T23:34:04.015970+00:00'
